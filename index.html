@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Axel Frégiers">
+  <title>Ender Dragon - Modèle 3D</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="shortcut icon" href="/img/ender-icon.png">
+  
+  <!-- partie css-->
+  
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --void: #06060c;
+      --card: #111120;
+      --violet: #7c3aed;
+      --cyan: #06b6d4;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --border: rgba(255,255,255,0.06);
+      --border-glow: rgba(124,58,237,0.35);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--void);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    #particles {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 2.5rem;
+      background: linear-gradient(to bottom, rgba(6,6,12,0.9), transparent);
+      backdrop-filter: blur(8px);
+    }
+
+    .nav-logo {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cyan);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    /* ── HERO REFONTE ── */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 7rem 4rem 4rem;
+      gap: 4rem;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    /* Colonne gauche : texte */
+    .hero-left {
+      flex: 0 0 340px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .badge-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .badge {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.75rem;
+      border-radius: 100px;
+      border: 1px solid;
+    }
+
+    .badge-blender { color: var(--cyan); border-color: rgba(6,182,212,0.3); background: rgba(6,182,212,0.06); }
+    .badge-perso   { color: var(--violet); border-color: rgba(124,58,237,0.3); background: rgba(124,58,237,0.06); }
+
+    h1 {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: clamp(3.5rem, 5vw, 5.5rem);
+      font-weight: 700;
+      line-height: 0.9;
+      color: #fff;
+      margin-bottom: 1.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    h1 em {
+      font-style: normal;
+      display: block;
+      background: linear-gradient(100deg, var(--violet) 0%, var(--cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-desc {
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: var(--muted);
+      line-height: 1.8;
+      margin-bottom: 2rem;
+    }
+
+    .hero-desc strong {
+      color: rgba(255,255,255,0.55);
+      font-weight: 400;
+    }
+
+    .divider {
+      width: 32px;
+      height: 1px;
+      background: var(--border-glow);
+      margin-bottom: 1.5rem;
+    }
+
+    .context-block {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.22);
+      line-height: 1.7;
+      letter-spacing: 0.02em;
+      padding-left: 0.75rem;
+      border-left: 1px solid rgba(124,58,237,0.25);
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 2.5rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .stat { text-align: left; }
+
+    .stat-value {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+
+    /* Colonne droite : viewer */
+    .hero-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .viewer-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4/3;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid rgba(124,58,237,0.25);
+   
+
+      background-image: url('img/ender-fond.webp');
+      background-size: cover;
+      background-position: center;
+      box-shadow:
+      0 0 0 1px rgba(255,255,255,0.04),
+      0 0 80px rgba(124,58,237,0.2),
+      0 0 160px rgba(6,182,212,0.08);
+    }
+
+    #viewer {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .viewer-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(to bottom, rgba(6,6,12,0.25) 0%, transparent 15%, transparent 80%, rgba(6,6,12,0.4) 100%),
+        linear-gradient(to right, rgba(6,6,12,0.15) 0%, transparent 8%, transparent 92%, rgba(6,6,12,0.15) 100%);
+    }
+
+    .viewer-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 0.25rem;
+    }
+
+    .viewer-controls {
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.2);
+      display: flex;
+      gap: 1.25rem;
+    }
+
+    .viewer-controls span::before {
+      content: '';
+      display: inline-block;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--cyan);
+      opacity: 0.5;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+
+    .viewer-tag {
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(124,58,237,0.5);
+    }
+
+    #load-notice {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(6,6,12,0.85);
+      backdrop-filter: blur(4px);
+      gap: 1rem;
+      z-index: 10;
+      transition: opacity 0.4s;
+    }
+
+    #load-notice.hidden { opacity: 0; pointer-events: none; }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+      border: 1.5px solid rgba(124,58,237,0.25);
+      border-top-color: var(--violet);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .load-text {
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    /* ─── Stats bar (ancienne, cachée) ─── */
+    .stats-bar { display: none; }
+
+    @media (max-width: 900px) {
+      .hero {
+        flex-direction: column;
+        padding: 6rem 1.5rem 3rem;
+        gap: 2.5rem;
+      }
+      .hero-left { flex: none; width: 100%; }
+      h1 { font-size: clamp(3rem, 10vw, 4.5rem); }
+    }
+
+    .gallery-section, .tools-section {
+      position: relative;
+      z-index: 1;
+      padding: 5rem 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .section-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--violet);
+    }
+
+    .section-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .gallery-item {
+      position: relative;
+      aspect-ratio: 4/3;
+      background: var(--card);
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .gallery-item.featured {
+      grid-column: span 2;
+      aspect-ratio: 16/9;
+    }
+
+    .gallery-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      color: var(--muted);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: background 0.25s;
+    }
+
+    .gallery-item:hover .gallery-placeholder { background: rgba(124,58,237,0.08); }
+
+    .gallery-icon { width: 40px; height: 40px; opacity: 0.25; }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease, filter 0.3s;
+      filter: brightness(0.85);
+    }
+
+    .gallery-item:hover img { transform: scale(1.03); filter: brightness(1); }
+
+    .gallery-caption {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 1rem;
+      background: linear-gradient(to top, rgba(6,6,12,0.9), transparent);
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.6);
+      letter-spacing: 0.08em;
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+
+    .gallery-item:hover .gallery-caption { opacity: 1; }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+
+    .tool-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .tool-card:hover {
+      border-color: var(--border-glow);
+      background: rgba(124,58,237,0.06);
+    }
+
+    .tool-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--violet);
+      flex-shrink: 0;
+    }
+
+    .tool-name {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 3rem 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.8rem;
+      letter-spacing: 0.06em;
+    }
+
+    @media (max-width: 600px) {
+      nav { padding: 1rem 1.25rem; }
+      .nav-links { display: none; }
+      .stat { padding: 0 1.5rem; }
+      .gallery-grid { grid-template-columns: 1fr; }
+      .gallery-item.featured { grid-column: span 1; aspect-ratio: 4/3; }
+    }
+  </style>
+
+   <!--partie html -->
+
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+
+<nav>
+  <div class="nav-logo"><a href="https://www.linkedin.com/in/axel-fregiers-385538313/" style="text-decoration: none; color: #06b6d4;">@Axel Frégiers</a></div>
+  <ul class="nav-links">
+    <li><a href="#viewer-section">Modèle</a></li>
+    <li><a href="#gallery">Galerie</a></li>
+    <li><a href="#tools">Outils</a></li>
+  </ul>
+</nav>
+
+<main>
+  <section class="hero enderscreen" id="viewer-section">
+
+    <!-- Colonne texte -->
+    <div class="hero-left">
+      <div class="badge-row">
+        <span class="badge badge-blender">Blender 3D</span>
+        <span class="badge badge-perso">Projet personnel</span>
+      </div>
+
+      <h1>Ender<em>Dragon</em></h1>
+
+      <p class="hero-desc">
+        Modélisation low-poly du boss final de Minecraft.<br>
+        <strong>Point de départ : une figurine Kinder Joy</strong>, un petit jouet en plastique qui traînait sur mon bureau. Je voulais me mettre au défi de le remodéliser fidèlement depuis zéro dans Blender.
+      </p>
+
+      <div class="divider"></div>
+
+      <p class="context-block">
+        Exercice de modélisation à partir d'une référence physique. Travail sur les proportions, la géométrie low-poly et le rigging de base.
+      </p>
+
+      <div class="stats-row">
+        <div class="stat"><div class="stat-value">Low</div><div class="stat-label">Poly</div></div>
+        <div class="stat"><div class="stat-value">GLB</div><div class="stat-label">Export</div></div>
+        <div class="stat"><div class="stat-value">2026</div><div class="stat-label">Année</div></div>
+      </div>
+    </div>
+
+    <!-- Colonne viewer -->
+    <div class="hero-right">
+      <div class="viewer-wrap">
+        <canvas id="viewer"></canvas>
+        <div class="viewer-overlay"></div>
+        <div id="load-notice">
+          <div class="spinner"></div>
+          <p class="load-text">Chargement du modèle</p>
+        </div>
+      </div>
+      <div class="viewer-footer">
+        <div class="viewer-controls">
+          <span>Glisser pour tourner</span>
+          <span>Scroll pour zoomer</span>
+        </div>
+        <span class="viewer-tag">Interactive 3D</span>
+      </div>
+    </div>
+
+  </section>
+
+  <section class="gallery-section" id="gallery">
+    <div class="section-header">
+      <span class="section-label">Galerie</span>
+      <h2 class="section-title">Renders</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="gallery-grid">
+      <div class="gallery-item featured">
+        <div class="gallery-placeholder">
+          <img src="/img/render-principale.jpg" alt="render-main">
+          Render principal
+        </div>
+        <div class="gallery-caption">Vue principale</div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-placeholder">
+         <img src="/img/render-face.jpg" alt="render-face">
+          Render 2
+        </div>
+        <div class="gallery-caption">Vue de face</div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-placeholder">
+         <img src="/img/render-back.jpg" alt="render-back">
+          Render 3
+        </div>
+        <div class="gallery-caption">Vue d'arrière</div>
+      </div>
+      <div class="gallery-item">
+        <div class="gallery-placeholder">
+         <img src="/img/render-top.jpg" alt="render-top">
+          Render 4
+        </div>
+        <div class="gallery-caption">Vue de haut</div>
+      </div>
+    </div>
+
+  </section>
+
+  <section class="tools-section" id="tools">
+    <div class="section-header">
+      <span class="section-label">Process</span>
+      <h2 class="section-title">Outils</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="tools-grid">
+      <div class="tool-card"><div class="tool-dot"></div><div class="tool-name">Blender</div></div>
+      <div class="tool-card"><div class="tool-dot" style="background:var(--cyan)"></div><div class="tool-name">HTML/CSS</div></div>
+      <div class="tool-card"><div class="tool-dot" style="background:var(--cyan)"></div><div class="tool-name">Three.js</div></div>
+      <div class="tool-card"><div class="tool-dot" style="background:var(--cyan)"></div><div class="tool-name">Rigging</div></div>
+
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>Axel Frégiers - Projet 3D &nbsp;·&nbsp; Étudiant MMI</p>
+</footer>
+
+<!-- Three.js + GLTFLoader via unpkg (même version, garanti compatible) -->
+<script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
+<script src="https://unpkg.com/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+<script>
+/* ── Particles ── */
+(function() {
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let W, H, pts;
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  function init() {
+    pts = Array.from({length: 80}, () => ({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      r: Math.random() * 1.5 + 0.5,
+      o: Math.random() * 0.4 + 0.1
+    }));
+  }
+
+  let mx = -1000, my = -1000;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    for (const p of pts) {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+      const dist = Math.hypot(p.x - mx, p.y - my);
+      const glow = dist < 120 ? (1 - dist / 120) * 0.6 : 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(124,58,237,${p.o + glow})`;
+      ctx.fill();
+    }
+    for (let i = 0; i < pts.length; i++) {
+      for (let j = i + 1; j < pts.length; j++) {
+        const d = Math.hypot(pts[i].x - pts[j].x, pts[i].y - pts[j].y);
+        if (d < 120) {
+          ctx.beginPath();
+          ctx.moveTo(pts[i].x, pts[i].y);
+          ctx.lineTo(pts[j].x, pts[j].y);
+          ctx.strokeStyle = `rgba(124,58,237,${0.08 * (1 - d/120)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+
+  resize(); init(); draw();
+  window.addEventListener('resize', () => { resize(); init(); });
+})();
+
+/* ── Three.js Viewer ── */
+(function() {
+  const canvas = document.getElementById('viewer');
+  const notice = document.getElementById('load-notice');
+  const wrap = canvas.parentElement;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.4;
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+  camera.position.set(0, 0, 5);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 1.2));      /* ambient fort pour voir toutes les faces */
+  const key = new THREE.DirectionalLight(0xffffff, 2.0); /* lumière principale, légèrement au-dessus */
+  key.position.set(3, 5, 6);
+  scene.add(key);
+  const front = new THREE.DirectionalLight(0xffffff, 1.2); /* frontale basse — éclaire les ailes */
+  front.position.set(0, -2, 5);
+  scene.add(front);
+  const rim = new THREE.DirectionalLight(0x9966ff, 1.0);   /* rim violet derrière */
+  rim.position.set(-4, 3, -4);
+  scene.add(rim);
+  const fill = new THREE.PointLight(0x7c3aed, 1.2, 20);
+  fill.position.set(0, -3, 3);
+  scene.add(fill);
+
+  /* Mesh de substitution si le GLB ne charge pas */
+  const placeholder = new THREE.Mesh(
+    new THREE.IcosahedronGeometry(1.5, 2),
+    new THREE.MeshStandardMaterial({ color: 0x1a0a2e, roughness: 0.3, metalness: 0.8 })
+  );
+
+  function resize() {
+    const w = wrap.clientWidth, h = wrap.clientHeight;
+    renderer.setSize(w, h);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+
+  /* Chargement GLB */
+  const loader = new THREE.GLTFLoader();
+  loader.load(
+    '3d/enderdragon.glb',
+    (gltf) => {
+      /* Rendre toutes les faces visibles des deux côtés (ailes fines) */
+      gltf.scene.traverse((child) => {
+        if (child.isMesh && child.material) {
+          const mats = Array.isArray(child.material) ? child.material : [child.material];
+          mats.forEach(m => { m.side = THREE.DoubleSide; });
+        }
+      });
+      const box = new THREE.Box3().setFromObject(gltf.scene);
+      const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3());
+      const maxDim = Math.max(size.x, size.y, size.z);
+      const scale = 4.5 / maxDim;
+      gltf.scene.position.sub(center);   /* centre le pivot sur l'origine */
+      gltf.scene.position.multiplyScalar(scale); /* compense après scale */
+      gltf.scene.scale.setScalar(scale);
+      scene.add(gltf.scene);
+      notice.classList.add('hidden');
+      console.log('GLB chargé avec succès');
+    },
+    (xhr) => {
+      const pct = Math.round(xhr.loaded / xhr.total * 100);
+      notice.querySelector('.load-text').textContent = 'Chargement… ' + pct + '%';
+    },
+    (err) => {
+      console.error('Erreur GLB :', err);
+      notice.querySelector('.load-text').textContent = 'Fichier introuvable';
+      notice.querySelector('.spinner').style.display = 'none';
+      scene.add(placeholder);
+    }
+  );
+
+  /* Orbit controls */
+  let dragging = false, px = 0, py = 0;
+  let rotX = 0.2, rotY = 0, zoom = 3;
+  const target = new THREE.Vector3(0, 0, 0);
+
+  canvas.addEventListener('mousedown', e => { dragging = true; px = e.clientX; py = e.clientY; });
+  window.addEventListener('mouseup', () => { dragging = false; });
+  window.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    rotY += (e.clientX - px) * 0.008;
+    rotX += (e.clientY - py) * 0.006;
+    rotX = Math.max(-1.2, Math.min(1.2, rotX));
+    px = e.clientX; py = e.clientY;
+  });
+  canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    zoom = Math.max(1.5, Math.min(8, zoom + e.deltaY * 0.01));
+  }, { passive: false });
+
+  let touchPrev = null;
+  canvas.addEventListener('touchstart', e => { touchPrev = e.touches[0]; });
+  canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if (!touchPrev) return;
+    const t = e.touches[0];
+    rotY += (t.clientX - touchPrev.clientX) * 0.008;
+    rotX += (t.clientY - touchPrev.clientY) * 0.006;
+    touchPrev = t;
+  }, { passive: false });
+  canvas.addEventListener('touchend', () => { touchPrev = null; });
+
+  resize();
+  new ResizeObserver(resize).observe(wrap);
+
+  function loop() {
+    requestAnimationFrame(loop);
+    camera.position.x = zoom * Math.sin(rotY) * Math.cos(rotX);
+    camera.position.y = zoom * Math.sin(rotX);
+    camera.position.z = zoom * Math.cos(rotY) * Math.cos(rotX);
+    camera.lookAt(target);
+    if (!dragging && !touchPrev) rotY += 0.003;
+    fill.intensity = 1.5 + Math.sin(Date.now() * 0.002) * 0.5;
+    renderer.render(scene, camera);
+  }
+  loop();
+})();
+</script>
+</body>
+</html>
